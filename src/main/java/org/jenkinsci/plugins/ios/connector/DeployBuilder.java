@@ -19,16 +19,19 @@ import java.io.IOException;
 import java.util.Map;
 
 public class DeployBuilder extends Builder {
+
     public final String udid;
     public final String path;
+    public final String cmdLineArgs;
 
     @Inject
     private transient iOSDeviceList devices;
 
     @DataBoundConstructor
-    public DeployBuilder(String path,String udid) {
+    public DeployBuilder(String path, String udid, String cmdLineArgs) {
         this.path = path;
         this.udid = udid;
+        this.cmdLineArgs = cmdLineArgs;
     }
 
     @Override
@@ -37,6 +40,7 @@ public class DeployBuilder extends Builder {
 
         // Expand matrix and build variables in the device ID and command line args
         final String device = expandVariables(build, listener, udid);
+        final String args = expandVariables(build, listener, cmdLineArgs);
 
         iOSDevice dev = devices.getDevice(device);
         if (dev == null) {
@@ -60,7 +64,7 @@ public class DeployBuilder extends Builder {
             }
 
             listener.getLogger().printf("Deploying iOS app: %s\n", name);
-            dev.deploy(new File(bundle.getRemote()), listener);
+            dev.deploy(new File(bundle.getRemote()), args, listener);
         }
         return true;
     }
