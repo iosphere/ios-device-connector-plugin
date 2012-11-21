@@ -66,7 +66,7 @@ class DeployTask implements Callable<Void, IOException> {
             }
 
             ArgumentListBuilder arguments = new ArgumentListBuilder(fruitstrap.getRemote());
-            arguments.add("--id", deviceId, "--bundle", appDir.getName());
+            arguments.add("install", "--id", deviceId, "--bundle", appDir.getName());
             arguments.addTokenized(cmdLineArgs);
 
             ProcStarter proc = new LocalLauncher(listener).launch()
