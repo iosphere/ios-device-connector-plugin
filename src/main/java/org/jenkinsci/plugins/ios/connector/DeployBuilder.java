@@ -5,6 +5,7 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
+import hudson.matrix.Combination;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
@@ -67,6 +68,30 @@ public class DeployBuilder extends Builder {
             dev.deploy(new File(bundle.getRemote()), args, listener);
         }
         return true;
+    }
+
+    /**
+     * Determines the UDID to be used for a build.
+     *
+     * @return The UDID to use.
+     */
+    public String resolveUdid() {
+        return resolveUdid(null);
+    }
+
+    /**
+     * Determines the UDID to be used for this job's configuration, resolving the UDID value if
+     * required from the provided matrix combination variables.
+     *
+     * @param buildVars The matrix combination values for a build.
+     * @return The UDID to use.
+     */
+    public String resolveUdid(Combination buildVars) {
+        String result = Util.fixEmptyAndTrim(udid);
+        if (result != null && buildVars != null) {
+            result = Util.replaceMacro(result, buildVars);
+        }
+        return result;
     }
 
     private static String expandVariables(AbstractBuild<?, ?> build, BuildListener listener, String token) {
